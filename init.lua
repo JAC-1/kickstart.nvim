@@ -126,33 +126,33 @@ require('lazy').setup({
 
         -- Actions
         -- visual mode
-        map('v', '<leader>hs', function()
-          gs.stage_hunk { vim.fn.line '.', vim.fn.line 'v' }
-        end, { desc = 'stage git hunk' })
-        map('v', '<leader>hr', function()
-          gs.reset_hunk { vim.fn.line '.', vim.fn.line 'v' }
-        end, { desc = 'reset git hunk' })
-        -- normal mode
-        map('n', '<leader>hs', gs.stage_hunk, { desc = 'git stage hunk' })
-        map('n', '<leader>hr', gs.reset_hunk, { desc = 'git reset hunk' })
-        map('n', '<leader>hS', gs.stage_buffer, { desc = 'git Stage buffer' })
-        map('n', '<leader>hu', gs.undo_stage_hunk, { desc = 'undo stage hunk' })
-        map('n', '<leader>hR', gs.reset_buffer, { desc = 'git Reset buffer' })
-        map('n', '<leader>hp', gs.preview_hunk, { desc = 'preview git hunk' })
-        map('n', '<leader>hb', function()
-          gs.blame_line { full = false }
-        end, { desc = 'git blame line' })
-        map('n', '<leader>hd', gs.diffthis, { desc = 'git diff against index' })
-        map('n', '<leader>hD', function()
-          gs.diffthis '~'
-        end, { desc = 'git diff against last commit' })
-
-        -- Toggles
-        map('n', '<leader>tb', gs.toggle_current_line_blame, { desc = 'toggle git blame line' })
-        map('n', '<leader>td', gs.toggle_deleted, { desc = 'toggle git show deleted' })
-
-        -- Text object
-        map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>', { desc = 'select git hunk' })
+        -- map('v', '<leader>hs', function()
+        --   gs.stage_hunk { vim.fn.line '.', vim.fn.line 'v' }
+        -- end, { desc = 'stage git hunk' })
+        -- map('v', '<leader>hr', function()
+        --   gs.reset_hunk { vim.fn.line '.', vim.fn.line 'v' }
+        -- end, { desc = 'reset git hunk' })
+        -- -- normal mode
+        -- map('n', '<leader>hs', gs.stage_hunk, { desc = 'git stage hunk' })
+        -- map('n', '<leader>hr', gs.reset_hunk, { desc = 'git reset hunk' })
+        -- map('n', '<leader>hS', gs.stage_buffer, { desc = 'git Stage buffer' })
+        -- map('n', '<leader>hu', gs.undo_stage_hunk, { desc = 'undo stage hunk' })
+        -- map('n', '<leader>hR', gs.reset_buffer, { desc = 'git Reset buffer' })
+        -- map('n', '<leader>hp', gs.preview_hunk, { desc = 'preview git hunk' })
+        -- map('n', '<leader>hb', function()
+        --   gs.blame_line { full = false }
+        -- end, { desc = 'git blame line' })
+        -- map('n', '<leader>hd', gs.diffthis, { desc = 'git diff against index' })
+        -- map('n', '<leader>hD', function()
+        --   gs.diffthis '~'
+        -- end, { desc = 'git diff against last commit' })
+        --
+        -- -- Toggles
+        -- map('n', '<leader>tb', gs.toggle_current_line_blame, { desc = 'toggle git blame line' })
+        -- map('n', '<leader>td', gs.toggle_deleted, { desc = 'toggle git show deleted' })
+        --
+        -- -- Text object
+        -- map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>', { desc = 'select git hunk' })
       end,
     },
   },
@@ -466,6 +466,10 @@ local on_attach = function(_, bufnr)
   nmap('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
   nmap('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
 
+  -- Harpoon binding test
+
+
+
   -- See `:help K` for why this keymap
   nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
   nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
@@ -484,22 +488,34 @@ local on_attach = function(_, bufnr)
   end, { desc = 'Format current buffer with LSP' })
 end
 
+-- Harpoon bindings for whichKey
+require('which-key').register( {
+  h = {
+    name = "[H]arpoon",
+    u = { function() require("harpoon.ui").toggle_quick_menu() end, "Toggle Harpoon UI"},
+    a = { function() require("harpoon.mark").add_file() end, "Toggle Harpoon UI"},
+    h = { function() require("harpoon.ui").nav_file(1) end, "Switch to mark 1"},
+    j = { function() require("harpoon.ui").nav_file(2) end, "Switch to mark 2"},
+    k = { function() require("harpoon.ui").nav_file(3) end, "Switch to mark 3"},
+    l = { function() require("harpoon.ui").nav_file(4) end, "Switch to mark 4"},
+  }
+}, { prefix = "<leader>"})
+
 -- document existing key chains
 require('which-key').register {
   ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
   ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
   ['<leader>g'] = { name = '[G]it', _ = 'which_key_ignore' },
-  ['<leader>h'] = { name = 'Git [H]unk', _ = 'which_key_ignore' },
+  -- ['<leader>h'] = { name = 'Git [H]unk', _ = 'which_key_ignore' },
   ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
   ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
   ['<leader>t'] = { name = '[T]oggle', _ = 'which_key_ignore' },
-  ['<leader>a'] = { name = '[A]Harpoon', _ = 'which_key_ignore' },
 }
 -- register which-key VISUAL mode
 -- required for visual <leader>hs (hunk stage) to work
 require('which-key').register({
   ['<leader>'] = { name = 'VISUAL <leader>' },
-  ['<leader>h'] = { 'Git [H]unk' },
+  -- ['<leader>h'] = { 'Git [H]unk' },
 }, { mode = 'v' })
 
 -- mason-lspconfig requires that these setup functions are called in this order
