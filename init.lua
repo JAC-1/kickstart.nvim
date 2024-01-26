@@ -44,7 +44,6 @@ require('lazy').setup({
   -- Harpoon bro
   'ThePrimeagen/harpoon',
 
-
   -- NOTE: This is where your plugins related to LSP can be installed.
   --  The configuration is done below. Search for lspconfig to find it below.
   {
@@ -534,11 +533,10 @@ require('mason-lspconfig').setup()
 local servers = {
   -- clangd = {},
   -- gopls = {},
-  -- pyright = {},
+  pyright = {},
   -- rust_analyzer = {},
   -- tsserver = {},
   -- html = { filetypes = { 'html', 'twig', 'hbs'} },
-  python_lsp_server = {},
   lua_ls = {
     Lua = {
       workspace = { checkThirdParty = false },
@@ -560,7 +558,7 @@ capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 local mason_lspconfig = require 'mason-lspconfig'
 
 mason_lspconfig.setup {
-  ensure_installed = {"lua_ls", "python_lsp_server"},
+  ensure_installed = {"lua_ls", "pyright"},
 }
 
 mason_lspconfig.setup_handlers {
@@ -625,5 +623,3 @@ cmp.setup {
   },
 }
 
--- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
