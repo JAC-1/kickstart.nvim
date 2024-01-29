@@ -1,17 +1,8 @@
---TODO:
-
--- configure whichkey for menomic harpoon
--- Change the color scheme?
---
---  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 require('justin')
 
--- [[ Install `lazy.nvim` plugin manager ]]
---    https://github.com/folke/lazy.nvim
---    `:help lazy.nvim.txt` for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system {
@@ -19,20 +10,14 @@ if not vim.loop.fs_stat(lazypath) then
     'clone',
     '--filter=blob:none',
     'https://github.com/folke/lazy.nvim.git',
-    '--branch=stable', -- latest stable release
+    '--branch=stable',
     lazypath,
   }
 end
+
 vim.opt.rtp:prepend(lazypath)
 
--- [[ Configure plugins ]]
--- NOTE: Here is where you install your plugins.
---  You can configure plugins using the `config` key.
---
---  You can also configure plugins after the setup call,
---    as they will be available in your neovim runtime.
 require('lazy').setup({
-  -- NOTE: First, some plugins that don't require any configuration
 
   -- Git related plugins
   'tpope/vim-fugitive',
@@ -41,28 +26,24 @@ require('lazy').setup({
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
 
+  -- Formatter
+  'sbdchd/neoformat',
   -- Harpoon bro
   'ThePrimeagen/harpoon',
 
-  -- NOTE: This is where your plugins related to LSP can be installed.
-  --  The configuration is done below. Search for lspconfig to find it below.
   {
-    -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
     dependencies = {
       -- Automatically install LSPs to stdpath for neovim
       'williamboman/mason.nvim',
       'williamboman/mason-lspconfig.nvim',
 
-      -- Useful status updates for LSP
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
       { 'j-hui/fidget.nvim', opts = {} },
 
-      -- Additional lua configuration, makes nvim stuff amazing!
       'folke/neodev.nvim',
     },
   },
-
   {
     -- Autocompletion
     'hrsh7th/nvim-cmp',
@@ -80,7 +61,6 @@ require('lazy').setup({
   },
 
   -- Useful plugin to show you pending keybinds.
-  { 'folke/which-key.nvim',  opts = {} },
   {
     -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
@@ -343,7 +323,6 @@ end
 
 vim.api.nvim_create_user_command('LiveGrepGitRoot', live_grep_git_root, {})
 
--- See `:help telescope.builtin`
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
 vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
 vim.keymap.set('n', '<leader>/', function()
@@ -353,7 +332,7 @@ vim.keymap.set('n', '<leader>/', function()
     previewer = false,
   })
 end, { desc = '[/] Fuzzily search in current buffer' })
-
+-- See `:help telescope.builtin`
 local function telescope_live_grep_open_files()
   require('telescope.builtin').live_grep {
     grep_open_files = true,
@@ -487,61 +466,20 @@ local on_attach = function(_, bufnr)
   end, { desc = 'Format current buffer with LSP' })
 end
 
--- Harpoon bindings for whichKey
-require('which-key').register( {
-  h = {
-    name = "[H]arpoon",
-    u = { function() require("harpoon.ui").toggle_quick_menu() end, "Toggle Harpoon UI"},
-    a = { function() require("harpoon.mark").add_file() end, "Toggle Harpoon UI"},
-    h = { function() require("harpoon.ui").nav_file(1) end, "Switch to mark 1"},
-    j = { function() require("harpoon.ui").nav_file(2) end, "Switch to mark 2"},
-    k = { function() require("harpoon.ui").nav_file(3) end, "Switch to mark 3"},
-    l = { function() require("harpoon.ui").nav_file(4) end, "Switch to mark 4"},
-  }
-}, { prefix = "<leader>"})
 
--- document existing key chains
-require('which-key').register {
-  ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
-  ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
-  ['<leader>g'] = { name = '[G]it', _ = 'which_key_ignore' },
-  -- ['<leader>h'] = { name = 'Git [H]unk', _ = 'which_key_ignore' },
-  ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
-  ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
-  ['<leader>t'] = { name = '[T]oggle', _ = 'which_key_ignore' },
-}
--- register which-key VISUAL mode
--- required for visual <leader>hs (hunk stage) to work
-require('which-key').register({
-  ['<leader>'] = { name = 'VISUAL <leader>' },
-  -- ['<leader>h'] = { 'Git [H]unk' },
-}, { mode = 'v' })
-
--- mason-lspconfig requires that these setup functions are called in this order
--- before setting up the servers.
 require('mason').setup()
 require('mason-lspconfig').setup()
 
--- Enable the following language servers
---  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
---
---  Add any additional override configuration in the following tables. They will be passed to
---  the `settings` field of the server config. You must look up that documentation yourself.
---
---  If you want to override the default filetypes that your language server will attach to you can
---  define the property 'filetypes' to the map in question.
 local servers = {
-  -- clangd = {},
-  -- gopls = {},
   pyright = {},
   -- rust_analyzer = {},
-  -- tsserver = {},
-  -- html = { filetypes = { 'html', 'twig', 'hbs'} },
+  autopep8 = {},
+  tsserver = {},
+  html_lsp = { filetypes = { 'html', 'twig', 'hbs' } },
   lua_ls = {
     Lua = {
       workspace = { checkThirdParty = false },
       telemetry = { enable = false },
-      -- NOTE: toggle below to ignore Lua_LS's noisy `missing-fields` warnings
       diagnostics = { disable = { 'missing-fields' } },
     },
   },
@@ -554,11 +492,10 @@ require('neodev').setup()
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
--- Ensure the servers above are installed
 local mason_lspconfig = require 'mason-lspconfig'
 
 mason_lspconfig.setup {
-  ensure_installed = {"lua_ls", "pyright"},
+  ensure_installed = { "lua_ls", "pyright" },
 }
 
 mason_lspconfig.setup_handlers {
@@ -622,4 +559,3 @@ cmp.setup {
     { name = 'luasnip' },
   },
 }
-
