@@ -19,6 +19,9 @@ vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
 
+  -- Undo Tree
+  {"mbbill/undotree"},
+
   -- Debugging
   {'mfussenegger/nvim-dap', lazy=true},
   {'mfussenegger/nvim-dap-python', lazy=true},
