@@ -19,15 +19,21 @@ vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
 
+  -- Debugging
+  {'mfussenegger/nvim-dap', lazy=true},
+  {'mfussenegger/nvim-dap-python', lazy=true},
+  { 'rcarriga/nvim-dap-ui', lazy=true },
+
   -- Git related plugins
-  'tpope/vim-fugitive',
-  'tpope/vim-rhubarb',
+  { 'tpope/vim-fugitive', lazy=true},
+  { 'tpope/vim-rhubarb', lazy=true},
 
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
 
   -- Formatter
   'sbdchd/neoformat',
+
   -- Harpoon bro
   'ThePrimeagen/harpoon',
 
@@ -46,7 +52,7 @@ require('lazy').setup({
   },
   {
     -- Autocompletion
-    'hrsh7th/nvim-cmp',
+    'hrsh8th/nvim-cmp',
     dependencies = {
       -- Snippet Engine & its associated nvim-cmp source
       'L3MON4D3/LuaSnip',
@@ -177,13 +183,8 @@ require('lazy').setup({
     branch = '0.1.x',
     dependencies = {
       'nvim-lua/plenary.nvim',
-      -- Fuzzy Finder Algorithm which requires local dependencies to be built.
-      -- Only load if `make` is available. Make sure you have the system
-      -- requirements installed.
       {
         'nvim-telescope/telescope-fzf-native.nvim',
-        -- NOTE: If you are having trouble with this installation,
-        --       refer to the README for telescope-fzf-native for more instructions.
         build = 'make',
         cond = function()
           return vim.fn.executable 'make' == 1
@@ -201,24 +202,7 @@ require('lazy').setup({
     build = ':TSUpdate',
   },
 
-  -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
-  --       These are some example plugins that I've included in the kickstart repository.
-  --       Uncomment any of the lines below to enable them.
-  -- require 'kickstart.plugins.autoformat',
-  -- require 'kickstart.plugins.debug',
-
-  -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
-  --    You can use this folder to prevent any conflicts with this init.lua if you're interested in keeping
-  --    up-to-date with whatever is in the kickstart repo.
-  --    Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  --
-  --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
-  -- { import = 'custom.plugins' },
 }, {})
-
--- [[ Setting options ]]
--- See `:help vim.o`
--- NOTE: You can change these options as you wish!
 
 -- Set highlight on search
 vim.o.hlsearch = false
@@ -472,6 +456,7 @@ require('mason-lspconfig').setup()
 
 local servers = {
   pyright = {},
+  black = {},
   -- rust_analyzer = {},
   autopep8 = {},
   tsserver = {},
@@ -559,3 +544,27 @@ cmp.setup {
     { name = 'luasnip' },
   },
 }
+
+-- Debugger 
+-- TODO: Set keymaps to something I would use
+require('dap-python').setup('~/.virtualenvs/debugpy/bin/python')
+vim.fn.sign_define('DapBreakpoint',{ text ='🟥', texthl ='', linehl ='', numhl =''})
+vim.fn.sign_define('DapStopped',{ text ='▶️', texthl ='', linehl ='', numhl =''})
+
+-- vim.keymap.set('n', '<F5>', require 'dap'.continue)
+-- vim.keymap.set('n', '<F10>', require 'dap'.step_over)
+-- vim.keymap.set('n', '<F11>', require 'dap'.step_into)
+-- vim.keymap.set('n', '<F12>', require 'dap'.step_out)
+-- vim.keymap.set('n', '<leader>b', require 'dap'.toggle_breakpoint)
+
+require('dapui').setup()
+local dap, dapui =require("dap"),require("dapui")
+dap.listeners.after.event_initialized["dapui_config"]=function()
+  dapui.open()
+end
+dap.listeners.before.event_terminated["dapui_config"]=function()
+  dapui.close()
+end
+dap.listeners.before.event_exited["dapui_config"]=function()
+  dapui.close()
+end
