@@ -1,6 +1,4 @@
-vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
-
+vim.g.mapleader = ' ' vim.g.maplocalleader = ' '
 require('justin')
 
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -145,15 +143,23 @@ require('lazy').setup({
     },
   },
 
-  {
-    -- Theme inspired by Atom
-    'navarasu/onedark.nvim',
-    priority = 1000,
-    config = function()
-      vim.cmd.colorscheme 'onedark'
-    end,
-  },
+  -- {
+  --   -- Theme inspired by Atom
+  --   'navarasu/onedark.nvim',
+  --   priority = 1000,
+  --   config = function()
+  --     vim.cmd.colorscheme 'onedark'
+  --   end,
+  -- },
 
+  -- {
+  --   'folke/tokyonight.nvim',
+  --   priority = 1000,
+  -- },
+  {
+    'ellisonleao/gruvbox.nvim',
+    priority = 1000
+  },
   {
     -- Set lualine as statusline
     'nvim-lualine/lualine.nvim',
@@ -459,8 +465,7 @@ require('mason-lspconfig').setup()
 
 local servers = {
   pyright = {},
-  black = {},
-  -- rust_analyzer = {},
+  rust_analyzer = {},
   autopep8 = {},
   tsserver = {},
   html_lsp = { filetypes = { 'html', 'twig', 'hbs' } },
@@ -571,3 +576,13 @@ end
 dap.listeners.before.event_exited["dapui_config"]=function()
   dapui.close()
 end
+
+-- require('tokyonight').setup({
+--   transparent = true,
+--   style = "moon"
+-- })
+-- vim.cmd[[colorscheme tokyonight]]
+require('gruvbox').setup({
+  transparent = true
+})
+vim.cmd[[colorscheme gruvbox]]
